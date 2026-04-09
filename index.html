@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameTracker // ZYANETRALYS</title>
+  <style>
+    :root {
+      --bg: #0b0e14; --panel: #11131a; --input: #1a1d24; --text: #c5c6c7;
+      --muted: #8892b0; --accent: #0052a3; --accent-hover: #0066cc;
+      --border: #2a2d35; --success: #22c55e; --warning: #f59e0b; --error: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 2rem 1rem;
+    }
+    .container { max-width: 880px; margin: 0 auto; }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem;
+    }
+    header h1 { font-size: 1.1rem; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; }
+    .status { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--panel); border: 1px solid var(--success); color: var(--success); }
+
+    .controls { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    input[type="text"] {
+      flex: 1; padding: 0.7rem; background: var(--input); border: 1px solid var(--border);
+      color: var(--text); border-radius: 6px; font-family: inherit; font-size: 0.85rem; outline: none;
+    }
+    input[type="text"]:focus { border-color: var(--accent); }
+    button {
+      padding: 0.7rem 1rem; background: var(--accent); color: #fff; border: none;
+      border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.85rem; transition: background 0.15s;
+    }
+    button:hover { background: var(--accent-hover); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .loader { text-align: center; padding: 1.5rem; color: var(--muted); display: none; font-size: 0.85rem; }
+    .loader.active { display: block; }
+    .empty { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.9rem; }
+
+    .game-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .game-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.9rem 1rem; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 6px; transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .game-item:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .game-meta { display: flex; flex-direction: column; gap: 0.3rem; }
+    .game-title { font-weight: 600; font-size: 0.95rem; }
+    .game-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .tag { font-size: 0.65rem; padding: 0.1rem 0.35rem; background: rgba(136,146,176,0.15); border-radius: 3px; color: var(--muted); }
+    .game-rating { font-size: 1rem; color: var(--warning); font-weight: bold; }
+
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem; }
+    .page-btn { padding: 0.5rem 0.9rem; background: var(--panel); border: 1px solid var(--border); color: var(--text); }
+    .page-info { font-size: 0.8rem; color: var(--muted); }
+
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.6rem 0.9rem;
+      background: var(--panel); border-left: 4px solid var(--accent);
+      color: var(--text); border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      transform: translateX(120%); transition: transform 0.25s ease; z-index: 100; font-size: 0.8rem;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.error { border-color: var(--error); }
+    .toast.success { border-color: var(--success); }
+
+    @media (max-width: 600px) {
+      .game-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .game-rating { align-self: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>GameTracker // ZYANETRALYS</h1>
+      <span class="status">● SISTEMA ACTIVO</span>
+    </header>
+
+    <div class="controls">
+      <input type="text" id="search" placeholder="Buscar por título, rol o estado..." autocomplete="off">
+      <button id="searchBtn">Filtrar</button>
+    </div>
+
+    <div class="loader" id="loader">Sincronizando datos...</div>
+    <ul class="game-list" id="gameList"></ul>
+
+    <div class="pagination">
+      <button class="page-btn" id="prevBtn">◀</button>
+      <span class="page-info" id="pageInfo">Página 1</span>
+      <button class="page-btn" id="nextBtn">▶</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const MOCK = [
+      { id:'hd2', title:'Helldivers 2', rating:8.5, tags:['Coop','Tactical','Shooter'], status:'JUGADO' },
+      { id:'val', title:'Valorant', rating:7.2, tags:['Competitivo','FPS','5v5'], status:'PENDIENTE' },
+      { id:'er', title:'Elden Ring', rating:9.8, tags:['Souls','Mundo Abierto','RPG'], status:'FAVORITO' },
+      { id:'cy', title:'Cyberpunk 2077', rating:8.1, tags:['RPG','Sci-Fi','Acción'], status:'JUGADO' },
+      { id:'bg3', title:'Baldur\'s Gate 3', rating:9.5, tags:['CRPG','Narrativo','Coop'], status:'JUGADO' },
+      { id:'h2', title:'Hades II', rating:8.9, tags:['Roguelike','Acción','Indie'], status:'PENDIENTE' },
+      { id:'sf', title:'Starfield', rating:6.5, tags:['RPG','Exploración','Sci-Fi'], status:'PENDIENTE' },
+      { id:'dos2', title:'Divinity: Original Sin 2', rating:9.2, tags:['CRPG','Turnos','Fantasía'], status:'FAVORITO' },
+      { id:'ds', title:'Dark Souls Remastered', rating:8.8, tags:['Souls','Clásico','Difícil'], status:'JUGADO' },
+      { id:'rdr', title:'Red Dead Redemption 2', rating:9.4, tags:['Acción','Narrativo','Mundo Abierto'], status:'JUGADO' },
+      { id:'totk', title:'Zelda: Tears of the Kingdom', rating:9.6, tags:['Aventura','Puzzles','Nintendo'], status:'FAVORITO' },
+      { id:'doom', title:'DOOM Eternal', rating:8.7, tags:['FPS','Rápido','Metal'], status:'PENDIENTE' }
+    ];
+
+    let state = { q: '', page: 1, perPage: 5, loading: false, data: [...MOCK] };
+    const el = id => document.getElementById(id);
+
+    const toast = (msg, type='success') => {
+      const t = el('toast'); t.textContent = msg; t.className = `toast show ${type}`;
+      setTimeout(() => t.classList.remove('show'), 2500);
+    };
+
+    const render = () => {
+      el('loader').classList.toggle('active', state.loading);
+      const list = el('gameList'); list.innerHTML = '';
+      if (state.loading) return;
+
+      const start = (state.page - 1) * state.perPage;
+      const slice = state.data.slice(start, start + state.perPage);
+
+      if (!slice.length) {
+        list.innerHTML = `<li class="empty">Sin resultados. Ajusta la búsqueda.</li>`;
+        return;
+      }
+
+      slice.forEach(g => {
+        const li = document.createElement('li');
+        li.className = 'game-item';
+        li.innerHTML = `
+          <div class="game-meta">
+            <span class="game-title">${g.title}</span>
+            <div class="game-tags">${g.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          </div>
+          <div class="game-rating">★ ${g.rating.toFixed(1)}</div>`;
+        list.appendChild(li);
+      });
+
+      const total = Math.ceil(state.data.length / state.perPage) || 1;
+      el('pageInfo').textContent = `Página ${state.page} de ${total}`;
+      el('prevBtn').disabled = state.page <= 1;
+      el('nextBtn').disabled = state.page >= total;
+    };
+
+    const fetch = (delay=true) => {
+      state.loading = true; render();
+      if (!delay) { state.loading=false; render(); return; }
+      setTimeout(() => {
+        state.loading = false;
+        const q = state.q.toLowerCase();
+        state.data = MOCK.filter(g =>
+          g.title.toLowerCase().includes(q) ||
+          g.tags.some(t => t.toLowerCase().includes(q)) ||
+          g.status.toLowerCase().includes(q)
+        );
+        state.page = 1; render(); toast('Sincronización completada');
+      }, 500);
+    };
+
+    el('search').addEventListener('input', e => {
+      state.q = e.target.value;
+      clearTimeout(window._debounce);
+      window._debounce = setTimeout(() => fetch(false), 300);
+    });
+    el('searchBtn').addEventListener('click', () => fetch(true));
+    el('prevBtn').addEventListener('click', () => { if(state.page>1){state.page--; render();} });
+    el('nextBtn').addEventListener('click', () => {
+      const max = Math.ceil(state.data.length/state.perPage)||1;
+      if(state.page<max){state.page++; render();}
+    });
+
+    fetch(true);
+  </script>
+</body>
+</html>
