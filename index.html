@@ -6,211 +6,329 @@
   <title>GAMETRACKER // ZYANETRALYS</title>
   <style>
     :root {
-      --bg: #05070e; --bg-2: #0b0f1a; --surface: #111625; --surface-2: #181d30;
-      --border: #262c42; --border-light: #323956;
-      --text: #e4e8f1; --text-2: #9aa3bf; --text-3: #5f6785;
-      --accent: #00d4ff; --accent-dim: rgba(0,212,255,0.15);
-      --warn: #ff2a6d; --warn-dim: rgba(255,42,109,0.12);
-      --ok: #05ffa1; --ok-dim: rgba(5,255,161,0.12);
-      --gold: #ffd700; --gold-dim: rgba(255,215,0,0.12);
+      --bg: #04050a; --bg-2: #0a0c16; --surface: #101320; --surface-2: #161a2b;
+      --border: #252a3f; --border-light: #343a55;
+      --text: #e6e9f3; --text-2: #8f96b0; --text-3: #5a6180;
+      --cyan: #00f0ff; --cyan-dim: rgba(0,240,255,0.12);
+      --pink: #ff2a6d; --pink-dim: rgba(255,42,109,0.12);
+      --lime: #b5ff00; --lime-dim: rgba(181,255,0,0.1);
+      --gold: #ffd166; --gold-dim: rgba(255,209,102,0.12);
+      --radius: 12px; --shadow: 0 8px 24px rgba(0,0,0,0.6);
       --font-ui: system-ui, -apple-system, "Inter", "Segoe UI", Roboto, sans-serif;
       --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Consolas, monospace;
-      --radius: 10px; --shadow: 0 8px 24px rgba(0,0,0,0.5);
-      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --ease: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
-    body { font-family: var(--font-ui); background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; overflow-x: hidden; position: relative; }
-    body::before { content: ""; position: fixed; inset: 0; z-index: -1; opacity: 0.04; pointer-events: none; background-image: repeating-linear-gradient(90deg, transparent 0, transparent 39px, var(--border) 40px), repeating-linear-gradient(0deg, transparent 0, transparent 39px, var(--border) 40px); background-size: 40px 40px; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-ui); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; overflow-x: hidden; position: relative; }
+    body::before { content: ""; position: fixed; inset: 0; z-index: -1; opacity: 0.03; pointer-events: none; background-image: repeating-linear-gradient(90deg, transparent 0, transparent 49px, var(--border) 50px), repeating-linear-gradient(0deg, transparent 0, transparent 49px, var(--border) 50px); background-size: 50px 50px; }
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-track { background: var(--bg-2); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
-    header { position: sticky; top: 0; z-index: 40; display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.5rem; background: rgba(11,15,26,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    header { position: sticky; top: 0; z-index: 40; display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1.5rem; background: rgba(10,12,22,0.8); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
     .brand { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.3px; text-transform: uppercase; }
-    .brand span { color: var(--accent); text-shadow: 0 0 10px var(--accent-dim); }
-    .status-ind { display: flex; align-items: center; gap: 0.5rem; background: var(--ok-dim); color: var(--ok); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.65rem; font-family: var(--font-mono); font-weight: 600; border: 1px solid rgba(5,255,161,0.25); }
-    .dot { width: 6px; height: 6px; background: var(--ok); border-radius: 50%; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%,100% { opacity:1; box-shadow:0 0 6px var(--ok); } 50% { opacity:0.4; box-shadow:none; } }
+    .brand span { color: var(--cyan); text-shadow: 0 0 12px var(--cyan-dim); }
+    .sys-pill { display: flex; align-items: center; gap: 0.5rem; background: var(--lime-dim); color: var(--lime); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.65rem; font-family: var(--font-mono); font-weight: 600; border: 1px solid rgba(181,255,0,0.2); }
+    .dot { width: 6px; height: 6px; background: var(--lime); border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; box-shadow:0 0 6px var(--lime); } 50% { opacity:0.3; box-shadow:none; } }
 
     nav { display: flex; gap: 0.4rem; padding: 0.6rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; scrollbar-width: none; }
     nav::-webkit-scrollbar { display: none; }
-    nav button { background: transparent; border: none; color: var(--text-3); padding: 0.5rem 0.9rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; border-radius: 6px; transition: all var(--transition); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; font-family: var(--font-mono); position: relative; }
+    nav button { background: transparent; border: none; color: var(--text-3); padding: 0.55rem 0.9rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; border-radius: 6px; transition: all var(--ease); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.6px; font-family: var(--font-mono); position: relative; }
     nav button:hover { color: var(--text-2); background: rgba(255,255,255,0.04); }
-    nav button.active { color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(0,212,255,0.2); }
-    nav button.active::after { content: ""; position: absolute; bottom: -0.6rem; left: 50%; transform: translateX(-50%); width: 40%; height: 2px; background: var(--accent); box-shadow: 0 0 8px var(--accent-dim); }
+    nav button.active { color: var(--cyan); background: var(--cyan-dim); border: 1px solid rgba(0,240,255,0.25); }
+    nav button.active::after { content: ""; position: absolute; bottom: -0.6rem; left: 50%; transform: translateX(-50%); width: 30%; height: 2px; background: var(--cyan); box-shadow: 0 0 6px var(--cyan); border-radius: 2px; }
 
-    main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; min-height: calc(100vh - 120px); }
-    .view { animation: fade 0.25s ease; }
-    @keyframes fade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    main { padding: 1.5rem; max-width: 1150px; margin: 0 auto; min-height: calc(100vh - 120px); }
+    .view { animation: slideUp 0.25s ease; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
     .controls { display: flex; gap: 0.6rem; margin-bottom: 1.2rem; flex-wrap: wrap; align-items: center; }
     .search-box { flex: 1; min-width: 220px; position: relative; }
-    .search-box input { width: 100%; padding: 0.65rem 0.8rem 0.65rem 2.2rem; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); font-size: 0.8rem; transition: all var(--transition); font-family: var(--font-ui); }
-    .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
-    .search-box::before { content: ">"; position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--text-3); font-family: var(--font-mono); font-size: 0.85rem; }
-    .btn { padding: 0.6rem 1rem; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all var(--transition); display: inline-flex; align-items: center; gap: 0.4rem; text-transform: uppercase; letter-spacing: 0.4px; font-family: var(--font-mono); }
-    .btn:hover { background: var(--border); border-color: var(--border-light); }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-    .btn.primary:hover { background: #00b8db; box-shadow: 0 0 10px var(--accent-dim); }
-    .btn.warn { background: var(--warn); color: #fff; border-color: var(--warn); }
-    .btn.warn:hover { box-shadow: 0 0 10px var(--warn-dim); }
-    .btn.sm { padding: 0.35rem 0.6rem; font-size: 0.65rem; }
+    .search-box input { width: 100%; padding: 0.7rem 0.85rem 0.7rem 2.4rem; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-size: 0.85rem; transition: all var(--ease); font-family: var(--font-ui); }
+    .search-box input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-dim); }
+    .search-box::before { content: ">"; position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--text-3); font-family: var(--font-mono); font-size: 0.9rem; }
+    .btn { padding: 0.65rem 1.1rem; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all var(--ease); display: inline-flex; align-items: center; gap: 0.4rem; text-transform: uppercase; letter-spacing: 0.4px; font-family: var(--font-mono); }
+    .btn:hover { background: var(--border); border-color: var(--border-light); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn.primary { background: var(--cyan); color: var(--bg); border-color: var(--cyan); }
+    .btn.primary:hover { background: #00d4e6; box-shadow: 0 0 12px var(--cyan-dim); }
+    .btn.warn { background: var(--pink); color: #fff; border-color: var(--pink); }
+    .btn.warn:hover { box-shadow: 0 0 12px var(--pink-dim); }
+    .btn.sm { padding: 0.35rem 0.65rem; font-size: 0.65rem; }
+    .btn.ghost { background: transparent; border-color: transparent; color: var(--text-3); padding: 0.4rem; }
+    .btn.ghost:hover { background: var(--surface-2); color: var(--text); }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; transition: all var(--transition); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0.7rem; }
-    .card:hover { transform: translateY(-2px); border-color: var(--border-light); box-shadow: var(--shadow); }
-    .card-actions { position: absolute; top: 0.6rem; right: 0.6rem; display: flex; gap: 0.3rem; opacity: 0; transition: opacity var(--transition); }
-    .card:hover .card-actions { opacity: 1; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 1rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; transition: all var(--ease); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0.7rem; cursor: pointer; }
+    .card:hover { transform: translateY(-3px); border-color: var(--cyan); box-shadow: 0 6px 20px rgba(0,240,255,0.15); }
+    .card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: 0; transition: opacity 0.3s; }
+    .card:hover::before { opacity: 1; }
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
     .card-title { font-weight: 600; font-size: 0.95rem; line-height: 1.2; }
     .rating { font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 0.2rem; font-size: 0.8rem; font-family: var(--font-mono); }
-    .tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
-    .tag { font-size: 0.6rem; padding: 0.2rem 0.4rem; background: rgba(0,212,255,0.08); color: var(--accent); border-radius: 4px; border: 1px solid rgba(0,212,255,0.15); font-family: var(--font-mono); text-transform: uppercase; }
-    .tag.pending { background: var(--warn-dim); color: var(--warn); border-color: rgba(255,42,109,0.15); }
+    .tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .tag { font-size: 0.6rem; padding: 0.2rem 0.45rem; background: rgba(0,240,255,0.08); color: var(--cyan); border-radius: 4px; border: 1px solid rgba(0,240,255,0.15); font-family: var(--font-mono); text-transform: uppercase; }
+    .tag.pending { background: var(--pink-dim); color: var(--pink); border-color: rgba(255,42,109,0.15); }
     .tag.fav { background: var(--gold-dim); color: var(--gold); border-color: rgba(255,215,0,0.15); }
+    .tag.dropped { background: var(--lime-dim); color: var(--lime); border-color: rgba(181,255,0,0.15); }
     .progress-wrap { margin-top: auto; }
     .progress-label { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-2); margin-bottom: 0.3rem; font-family: var(--font-mono); }
     .progress-bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--ok)); border-radius: 2px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--lime)); border-radius: 2px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
 
-    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-3); font-family: var(--font-mono); border: 2px dashed var(--border); border-radius: var(--radius); margin-top: 1rem; }
+    .empty-state { text-align: center; padding: 3.5rem 1rem; color: var(--text-3); font-family: var(--font-mono); border: 2px dashed var(--border); border-radius: var(--radius); margin-top: 1rem; }
     .skeleton { background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%); background-size: 200% 100%; animation: shimmer 1s infinite; border-radius: var(--radius); height: 130px; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
     @media (max-width: 800px) { .detail-grid { grid-template-columns: 1fr; } }
-    .detail-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
-    .detail-panel h4 { font-size: 0.85rem; margin-bottom: 0.8rem; text-transform: uppercase; color: var(--text-2); letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
-    .char-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .char-chip { background: var(--surface-2); padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.7rem; cursor: pointer; border: 1px solid transparent; transition: all var(--transition); }
-    .char-chip:hover { border-color: var(--accent); background: var(--accent-dim); }
-    .char-chip.active { border-color: var(--ok); background: var(--ok-dim); color: var(--ok); }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+    .panel h4 { font-size: 0.8rem; margin-bottom: 0.8rem; text-transform: uppercase; color: var(--text-2); letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; font-family: var(--font-mono); }
+    .char-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .char-chip { background: var(--surface-2); padding: 0.35rem 0.6rem; border-radius: 6px; font-size: 0.7rem; cursor: pointer; border: 1px solid transparent; transition: all var(--ease); font-family: var(--font-mono); }
+    .char-chip:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+    .char-chip.active { border-color: var(--lime); background: var(--lime-dim); color: var(--lime); }
 
-    .feed-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
-    .feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-    .feed-user { font-weight: 600; color: var(--accent); }
-    .feed-meta { font-size: 0.7rem; color: var(--text-3); font-family: var(--font-mono); }
-    .feed-content { margin-bottom: 0.6rem; font-size: 0.9rem; }
-    .feed-actions { display: flex; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.5rem; }
-    .feed-btn { background: none; border: none; color: var(--text-3); font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 4px; transition: all var(--transition); font-family: var(--font-mono); }
+    .feed-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.9rem; margin-bottom: 0.8rem; transition: border-color var(--ease); }
+    .feed-item:hover { border-color: var(--border-light); }
+    .feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+    .feed-user { font-weight: 600; color: var(--cyan); cursor: pointer; }
+    .feed-meta { font-size: 0.65rem; color: var(--text-3); font-family: var(--font-mono); }
+    .feed-content { margin-bottom: 0.6rem; font-size: 0.88rem; line-height: 1.5; }
+    .feed-actions { display: flex; gap: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.5rem; }
+    .feed-btn { background: none; border: none; color: var(--text-3); font-size: 0.65rem; cursor: pointer; padding: 0.2rem 0.3rem; border-radius: 4px; transition: all var(--ease); font-family: var(--font-mono); text-transform: uppercase; }
     .feed-btn:hover { color: var(--text); background: var(--surface-2); }
+    .feed-btn.liked { color: var(--pink); }
 
-    .profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; }
+    .profile-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; }
     @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
     .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
-    .avatar-circle { width: 80px; height: 80px; background: var(--surface-2); border: 2px solid var(--accent); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-    .status-box { background: var(--surface-2); padding: 0.8rem; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 0.8rem; }
-    .status-box textarea { width: 100%; background: transparent; border: none; color: var(--text); font-family: var(--font-ui); font-size: 0.85rem; resize: none; outline: none; }
-    .affinity-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: var(--accent-dim); color: var(--accent); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-family: var(--font-mono); margin-left: 0.5rem; }
+    .avatar-circle { width: 72px; height: 72px; background: linear-gradient(135deg, var(--cyan), var(--pink)); border-radius: 50%; margin: 0 auto 0.8rem; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700; color: var(--bg); }
+    .status-box { background: var(--surface-2); padding: 0.7rem; border-radius: 8px; border: 1px solid var(--border); margin: 0.8rem 0; }
+    .status-box textarea { width: 100%; background: transparent; border: none; color: var(--text); font-family: var(--font-ui); font-size: 0.85rem; resize: none; outline: none; min-height: 60px; }
+    .affinity-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: var(--cyan-dim); color: var(--cyan); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-family: var(--font-mono); cursor: pointer; transition: all var(--ease); border: 1px solid rgba(0,240,255,0.2); }
+    .affinity-badge:hover { background: rgba(0,240,255,0.2); transform: translateY(-1px); }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 50; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(4,5,10,0.85); backdrop-filter: blur(8px); z-index: 50; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal { background: var(--bg-2); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; width: 92%; max-width: 750px; max-height: 90vh; overflow-y: auto; transform: translateY(8px) scale(0.98); transition: transform 0.2s cubic-bezier(0.2,0.8,0.2,1); box-shadow: 0 12px 36px rgba(0,0,0,0.6); }
+    .modal { background: var(--bg-2); border: 1px solid var(--border-light); border-radius: 14px; padding: 1.5rem; width: 92%; max-width: 700px; max-height: 85vh; overflow-y: auto; transform: translateY(10px) scale(0.98); transition: transform 0.25s cubic-bezier(0.2,0.8,0.2,1); box-shadow: 0 16px 40px rgba(0,0,0,0.7); }
     .modal-overlay.open .modal { transform: translateY(0) scale(1); }
     .form-group { margin-bottom: 0.8rem; }
     .form-group label { display: block; font-size: 0.65rem; color: var(--text-3); margin-bottom: 0.25rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-input, .form-select, .form-textarea { width: 100%; padding: 0.6rem; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-size: 0.85rem; transition: all var(--transition); font-family: var(--font-ui); }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 0.65rem; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-size: 0.85rem; transition: all var(--ease); font-family: var(--font-ui); }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px var(--cyan-dim); }
     .form-textarea { min-height: 80px; resize: vertical; }
     .form-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 0.8rem; }
 
-    #toast-container { position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 60; display: flex; flex-direction: column; gap: 0.4rem; pointer-events: none; max-width: 280px; }
-    .toast { background: var(--surface-2); border-left: 3px solid var(--accent); color: var(--text); padding: 0.7rem 0.9rem; border-radius: 6px; box-shadow: 0 6px 16px rgba(0,0,0,0.4); transform: translateX(120%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); pointer-events: all; font-size: 0.75rem; font-family: var(--font-mono); }
+    #toast-container { position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 60; display: flex; flex-direction: column; gap: 0.4rem; pointer-events: none; max-width: 300px; }
+    .toast { background: var(--surface-2); border-left: 3px solid var(--cyan); color: var(--text); padding: 0.7rem 0.9rem; border-radius: 6px; box-shadow: 0 6px 16px rgba(0,0,0,0.4); transform: translateX(120%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); pointer-events: all; font-size: 0.75rem; font-family: var(--font-mono); }
     .toast.show { transform: translateX(0); }
-    .toast.ok { border-color: var(--ok); } .toast.warn { border-color: var(--warn); }
+    .toast.ok { border-color: var(--lime); } .toast.warn { border-color: var(--pink); } .toast.info { border-color: var(--cyan); }
 
     @media (max-width: 640px) {
       header, nav, main { padding-left: 1rem; padding-right: 1rem; }
       .grid { grid-template-columns: 1fr; }
       .controls { flex-direction: column; align-items: stretch; }
+      .search-box { min-width: auto; }
+      .detail-grid { gap: 0.8rem; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">GAMETRACKER <span>// ZYANETRALYS</span></div>
-    <div class="status-ind"><span class="dot"></span> SISTEMA ACTIVO</div>
+    <div class="sys-pill"><span class="dot"></span> SISTEMA ACTIVO</div>
   </header>
 
   <nav id="main-nav">
     <button data-view="library" class="active">BIBLIOTECA</button>
-    <button data-view="lists">LISTAS PERSONALIZADAS</button>
-    <button data-view="social">RED SOCIAL</button>
+    <button data-view="lists">LISTAS</button>
+    <button data-view="social">RED</button>
     <button data-view="profile">PERFIL</button>
   </nav>
 
   <main id="app"></main>
-
   <div class="modal-overlay" id="modal-overlay"><div class="modal" id="modal-content"></div></div>
   <div id="toast-container"></div>
 
   <script>
-    // ESTRUCTURA DE DATOS POR DEFECTO
+    "use strict";
+
+    // ELEMENTOS DOM
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+
+    // DATOS BASE
     const DEFAULT_DB = {
-      user: { id: 'u1', name: 'Zyanetralys', status: 'Analizando patrones de juego...', tags: ['tactical', 'souls', 'strategy', 'indie'], bio: 'Operadora. Madrid. Enfoque en cooperativo y RPG narrativo.' },
+      user: { id: "u1", name: "Zyanetralys", status: "Analizando patrones tácticos...", tags: ["tactical", "souls", "strategy", "indie", "cyberpunk"], bio: "Operadora. Madrid. Enfoque en cooperativo y RPG narrativo. Buscando escuadra estable." },
       users: [
-        { id: 'u2', name: 'Kaelen', tags: ['rpg', 'open-world', 'souls'], status: 'Grindando nivel 50', library: ['g2','g3','g7'] },
-        { id: 'u3', name: 'Vesper', tags: ['fps', 'tactical', 'competitive'], status: 'En cola', library: ['g1','g4','g6','g9'] },
-        { id: 'u4', name: 'Synthia', tags: ['indie', 'roguelike', 'narrative'], status: 'Desconectada', library: ['g3','g5','g8','g10'] }
+        { id: "u2", name: "Kaelen", tags: ["rpg", "open-world", "souls"], status: "Grindando nivel 50", library: ["g2","g3","g7"] },
+        { id: "u3", name: "Vesper", tags: ["fps", "tactical", "competitive"], status: "En cola", library: ["g1","g4","g6","g9"] },
+        { id: "u4", name: "Synthia", tags: ["indie", "roguelike", "narrative"], status: "Desconectada", library: ["g3","g5","g8","g10"] }
       ],
       games: [
-        { id: 'g1', title: 'Helldivers 2', tags: ['COOP','TACTICO','SHOOTER'], status: 'played', progress: 100, rating: 8.7, review: 'Extraccion tactica brutal. Requiere coordinacion de escuadra.', characters: ['Commander','Heavy','Medic'], similar: ['g4','g6','g9'] },
-        { id: 'g2', title: 'Elden Ring', tags: ['SOULS','MUNDO_ABIERTO','RPG'], status: 'fav', progress: 100, rating: 9.6, review: 'Mundo interconectado maestro. Dificultad justa, arte direccional impecable.', characters: ['Blaidd','Ranni','Malenia'], similar: ['g3','g7'] },
-        { id: 'g3', title: "Baldur's Gate 3", tags: ['CRPG','NARRATIVO','COOP'], status: 'played', progress: 88, rating: 9.4, review: 'Libertad de decisiones sin precedentes. Motor grafico solido.', characters: ['Shadowheart','Astarion','Karlach'], similar: ['g10'] },
-        { id: 'g4', title: 'Valorant', tags: ['COMPETITIVO','FPS','5V5'], status: 'pending', progress: 0, rating: 7.9, review: 'Meta cambiante. Requiere comunicacion constante.', characters: ['Jett','Sage','Omen'], similar: ['g1','g6'] },
-        { id: 'g5', title: 'Cyberpunk 2077', tags: ['RPG','SCI-FI','ACCION'], status: 'pending', progress: 35, rating: 8.3, review: 'Narrativa madura post 2.0. Ciudad viva.', characters: ['V','Johnny','Panam'], similar: ['g2','g7'] },
-        { id: 'g6', title: 'Counter-Strike 2', tags: ['FPS','COMPETITIVO','TACTICO'], status: 'played', progress: 100, rating: 8.1, review: 'Estandar mecanico. Economia y tiro preciso.', characters: ['Operative','Support'], similar: ['g1','g4'] },
-        { id: 'g7', title: 'Zelda: Tears of the Kingdom', tags: ['AVENTURA','PUZZLES','NINTENDO'], status: 'fav', progress: 100, rating: 9.7, review: 'Sandbox de fisica y quimica. Ingenieria creativa.', characters: ['Link','Zelda','Rauru'], similar: ['g2','g8'] },
-        { id: 'g8', title: 'Hades II', tags: ['ROGUELIKE','ACCION','INDIE'], status: 'pending', progress: 15, rating: 9.1, review: 'Progresion adictiva. Combate fluido.', characters: ['Melinoe','Nyx','Chaos'], similar: ['g7','g10'] },
-        { id: 'g9', title: 'Apex Legends', tags: ['BATTLE_ROYALE','FPS','COOP'], status: 'played', progress: 95, rating: 8.4, review: 'Movimiento y habilidades de leyenda definen el meta.', characters: ['Wraith','Bloodhound','Lifeline'], similar: ['g1','g4'] },
-        { id: 'g10', title: 'Final Fantasy XIV', tags: ['MMORPG','NARRATIVO','COOP'], status: 'played', progress: 70, rating: 9.2, review: 'Historia extensa. Comunidad solida.', characters: ['Warrior','White Mage','Summoner'], similar: ['g3'] }
+        { id: "g1", title: "Helldivers 2", tags: ["COOP","TACTICO","SHOOTER"], status: "played", progress: 100, rating: 8.7, review: "Extracción táctica brutal. Requiere coordinación de escuadra.", characters: ["Commander","Heavy","Medic"], similar: ["g4","g6","g9"] },
+        { id: "g2", title: "Elden Ring", tags: ["SOULS","MUNDO_ABIERTO","RPG"], status: "fav", progress: 100, rating: 9.6, review: "Mundo interconectado maestro. Dificultad justa, arte direccional impecable.", characters: ["Blaidd","Ranni","Malenia"], similar: ["g3","g7"] },
+        { id: "g3", title: "Baldur's Gate 3", tags: ["CRPG","NARRATIVO","COOP"], status: "played", progress: 88, rating: 9.4, review: "Libertad de decisiones sin precedentes. Motor gráfico sólido.", characters: ["Shadowheart","Astarion","Karlach"], similar: ["g10"] },
+        { id: "g4", title: "Valorant", tags: ["COMPETITIVO","FPS","5V5"], status: "pending", progress: 0, rating: 7.9, review: "Meta cambiante. Requiere comunicación constante.", characters: ["Jett","Sage","Omen"], similar: ["g1","g6"] },
+        { id: "g5", title: "Cyberpunk 2077", tags: ["RPG","SCI-FI","ACCION"], status: "pending", progress: 35, rating: 8.3, review: "Narrativa madura post 2.0. Ciudad viva.", characters: ["V","Johnny","Panam"], similar: ["g2","g7"] },
+        { id: "g6", title: "Counter-Strike 2", tags: ["FPS","COMPETITIVO","TACTICO"], status: "played", progress: 100, rating: 8.1, review: "Estándar mecánico. Economía y tiro preciso.", characters: ["Operative","Support"], similar: ["g1","g4"] },
+        { id: "g7", title: "Zelda: Tears of the Kingdom", tags: ["AVENTURA","PUZZLES","NINTENDO"], status: "fav", progress: 100, rating: 9.7, review: "Sandbox de física y química. Ingeniería creativa.", characters: ["Link","Zelda","Rauru"], similar: ["g2","g8"] },
+        { id: "g8", title: "Hades II", tags: ["ROGUELIKE","ACCION","INDIE"], status: "pending", progress: 15, rating: 9.1, review: "Progresión adictiva. Combate fluido.", characters: ["Melinoe","Nyx","Chaos"], similar: ["g7","g10"] },
+        { id: "g9", title: "Apex Legends", tags: ["BATTLE_ROYALE","FPS","COOP"], status: "played", progress: 95, rating: 8.4, review: "Movimiento y habilidades de leyenda definen el meta.", characters: ["Wraith","Bloodhound","Lifeline"], similar: ["g1","g4"] },
+        { id: "g10", title: "Final Fantasy XIV", tags: ["MMORPG","NARRATIVO","COOP"], status: "played", progress: 70, rating: 9.2, review: "Historia extensa. Comunidad sólida.", characters: ["Warrior","White Mage","Summoner"], similar: ["g3"] }
       ],
       lists: [
-        { id: 'l1', name: 'COOP OBLIGATORIO', games: ['g1','g3'] },
-        { id: 'l2', name: 'SOULSLIKE', games: ['g2','g7'] },
-        { id: 'l3', name: 'PENDIENTE 2026', games: ['g4','g5','g8'] }
+        { id: "l1", name: "COOP OBLIGATORIO", games: ["g1","g3"] },
+        { id: "l2", name: "SOULSLIKE", games: ["g2","g7"] },
+        { id: "l3", name: "PENDIENTE 2026", games: ["g4","g5","g8"] }
       ],
       posts: [
-        { id: 'p1', userId: 'u3', content: 'Partida de tacticos esta noche. Necesitamos soporte.', time: '14:32', likes: 4 },
-        { id: 'p2', userId: 'u2', content: 'Ranni questline completada. 8 horas invertidas.', time: '10:15', likes: 12 },
-        { id: 'p3', userId: 'u4', content: 'Nuevo parche de Hades II. Buffs a invocaciones.', time: '09:45', likes: 7 }
+        { id: "p1", userId: "u3", content: "Partida de tácticos esta noche. Necesitamos soporte. Hora: 21:00 CET.", time: "14:32", likes: 4, likedBy: [] },
+        { id: "p2", userId: "u2", content: "Ranni questline completada. 8 horas invertidas. Valió cada segundo.", time: "10:15", likes: 12, likedBy: ["u1"] },
+        { id: "p3", userId: "u4", content: "Nuevo parche de Hades II. Buffs a invocaciones y ajuste de curva.", time: "09:45", likes: 7, likedBy: [] }
       ]
     };
 
-    // PERSISTENCIA Y ESTADO
+    // ALMACENAMIENTO
     const Store = {
        null,
       init() {
-        try { const raw = localStorage.getItem('gt_db'); this.data = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULT_DB)); }
+        try { this.data = JSON.parse(localStorage.getItem("gt_db")) || JSON.parse(JSON.stringify(DEFAULT_DB)); }
         catch { this.data = JSON.parse(JSON.stringify(DEFAULT_DB)); }
-        this.sync();
       },
-      sync() { localStorage.setItem('gt_db', JSON.stringify(this.data)); },
-      update(path, val) { const keys = path.split('.'); let obj = this.data; keys.forEach((k,i) => i === keys.length-1 ? obj[k] = val : obj = obj[k]); this.sync(); },
-      get(path) { return path.split('.').reduce((o,k) => o?.[k], this.data); },
-      calcAffinity(userId) {
-        const u = this.data.users.find(x=>x.id===userId); if(!u) return 0;
-        const myLib = this.data.games.filter(g => g.status!=='pending').map(g=>g.id);
-        const shared = u.library?.filter(id => myLib.includes(id)).length || 0;
-        return Math.round((shared / Math.max(myLib.length, u.library?.length||1)) * 100);
+      save() { localStorage.setItem("gt_db", JSON.stringify(this.data)); },
+      get(path) { return path.split(".").reduce((o, k) => o?.[k], this.data); },
+      set(path, val) {
+        const keys = path.split(".");
+        let obj = this.data;
+        keys.forEach((k, i) => i === keys.length - 1 ? obj[k] = val : obj = obj[k]);
+        this.save();
+      },
+      calcAffinity(uid) {
+        const u = this.data.users.find(x => x.id === uid); if (!u) return 0;
+        const myLib = this.data.games.filter(g => g.status !== "pending").map(g => g.id);
+        const shared = (u.library || []).filter(id => myLib.includes(id)).length;
+        return Math.round((shared / Math.max(myLib.length, (u.library || []).length || 1)) * 100);
       }
     };
 
-    // CONTROLADOR UI
+    // INTERFAZ
     const UI = {
-      $(s) { return document.querySelector(s); },
-      $$(s) { return document.querySelectorAll(s); },
-      toast(msg, type='ok') {
-        const c = this.$('#toast-container'); const t = document.createElement('div');
+      toast(msg, type = "info") {
+        const c = $("#toast-container"); const t = document.createElement("div");
         t.className = `toast ${type}`; t.textContent = msg; c.appendChild(t);
-        requestAnimationFrame(() => t.classList.add('show'));
-        setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 2800); }, 2800);
+        requestAnimationFrame(() => t.classList.add("show"));
+        setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 300); }, 2800);
       },
-      openModal(html) { this.$('#modal-content').innerHTML = html; this.$('#modal-overlay').classList.add('open'); },
-      closeModal() { this.$('#modal-overlay').classList.remove('open'); },
-      route(view) { App.currentView = view; this.$$('#main-nav button').forEach(b => b.classList.toggle('active', b.dataset.view===view)); App.render(); }
+      open(html) { $("#modal-content").innerHTML = html; $("#modal-overlay").classList.add("open"); },
+      close() { $("#modal-overlay").classList.remove("open"); },
+      route(view) { App.state.view = view; $$("#main-nav button").forEach(b => b.classList.toggle("active", b.dataset.view === view)); App.render(); }
+    };
+
+    // APLICACIÓN
+    const App = {
+      state: { view: "library", q: "", filter: "all", page: 1 },
+
+      async render() {
+        $("#app").innerHTML = '<div class="grid">' + Array(4).fill('<div class="skeleton"></div>').join("") + "</div>";
+        await new Promise(r => setTimeout(r, 250));
+        const views = { library: Views.library, lists: Views.lists, social: Views.social, profile: Views.profile };
+        $("#app").innerHTML = `<div class="view">${views[this.state.view]()}</div>`;
+        this.bind();
+      },
+
+      bind() {
+        const s = $("#search");
+        if (s) { s.oninput = e => { this.state.q = e.target.value.trim(); this.state.page = 1; this.render(); }; s.focus(); }
+        $$("#main-nav button").forEach(b => b.onclick = () => UI.route(b.dataset.view));
+        $("#modal-overlay").onclick = e => { if (e.target === $("#modal-overlay")) UI.close(); };
+      },
+
+      resetFilter() { this.state.filter = "all"; this.state.q = ""; this.render(); },
+
+      openGame(id) {
+        const g = Store.data.games.find(x => x.id === id); if (!g) return;
+        const similar = (g.similar || []).map(sid => Store.data.games.find(x => x.id === sid)).filter(Boolean);
+        UI.open(`
+          <div class="detail-grid">
+            <div class="panel">
+              <h4>${g.title}</h4>
+              <div style="display:flex; justify-content:space-between; margin-bottom:0.8rem"><span class="rating">★ ${g.rating}</span><span class="tag ${g.status==='pending'?'pending':g.status==='fav'?'fav':g.status==='dropped'?'dropped':''}">${g.status.toUpperCase()}</span></div>
+              <div style="margin-bottom:1rem; font-size:0.85rem; line-height:1.6; color:var(--text-2)">${g.review}</div>
+              <div class="form-group"><label>VALORACIÓN</label><input type="range" min="1" max="10" step="0.1" value="${g.rating}" oninput="this.nextElementSibling.textContent=this.value"><span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-3); display:block; margin-top:0.2rem">${g.rating}</span></div>
+              <div class="form-group"><label>RESEÑA</label><textarea class="form-textarea" onblur="App.updateReview('${id}', this.value)">${g.review}</textarea></div>
+            </div>
+            <div class="panel">
+              <h4>PERSONAJES FAVORITOS</h4>
+              <div class="char-grid">${g.characters.map(c => `<div class="char-chip">${c}</div>`).join("")}</div>
+              <h4 style="margin-top:1.2rem">TÍTULOS SIMILARES</h4>
+              <div style="display:flex; flex-wrap:wrap; gap:0.5rem">${similar.length ? similar.map(s => `<button class="btn sm" onclick="UI.close(); setTimeout(()=>App.openGame('${s.id}'),150)">${s.title}</button>`).join("") : '<div style="font-size:0.7rem; color:var(--text-3)">SIN DATOS</div>'}</div>
+              <h4 style="margin-top:1.2rem">ASIGNAR A LISTA</h4>
+              <div style="max-height:120px; overflow-y:auto">${Store.data.lists.map(l => `<div class="form-group" style="display:flex; gap:0.4rem; align-items:center; margin:0"><input type="checkbox" ${l.games.includes(id)?'checked':''} onchange="App.toggleGameList('${id}','${l.id}',this.checked)"> <span style="font-size:0.75rem">${l.name}</span></div>`).join("")}</div>
+            </div>
+          </div>
+          <div class="form-actions"><button class="btn warn" onclick="UI.close()">CERRAR</button><button class="btn primary" onclick="App.changeStatus('${id}')">CAMBIAR ESTADO</button></div>
+        `);
+        $(".char-chip")?.onclick = function() { this.classList.toggle("active"); };
+      },
+
+      updateReview(id, txt) { const g = Store.data.games.find(x=>x.id===id); if(g) { g.review = txt; Store.save(); UI.toast("RESEÑA GUARDADA","ok"); } },
+      changeStatus(id) {
+        const g = Store.data.games.find(x=>x.id===id); if(!g) return;
+        UI.open(`
+          <h4>CAMBIAR ESTADO</h4>
+          <div class="form-group"><select id="new-status" class="form-select"><option value="played" ${g.status==='played'?'selected':''}>COMPLETADO</option><option value="fav" ${g.status==='fav'?'selected':''}>FAVORITO</option><option value="pending" ${g.status==='pending'?'selected':''}>PENDIENTE</option><option value="dropped" ${g.status==='dropped'?'selected':''}>ABANDONADO</option></select></div>
+          <div class="form-actions"><button class="btn" onclick="UI.close()">CANCELAR</button><button class="btn primary" onclick="Store.data.games.find(x=>x.id==='${id}').status=document.getElementById('new-status').value; Store.save(); UI.close(); UI.toast('ESTADO ACTUALIZADO'); App.render()">APLICAR</button></div>
+        `);
+      },
+      toggleGameList(gid, lid, add) {
+        const l = Store.data.lists.find(x => x.id === lid);
+        if (!l) return;
+        if (add && !l.games.includes(gid)) l.games.push(gid);
+        else if (!add) l.games = l.games.filter(x => x !== gid);
+        Store.save();
+      },
+
+      createList() {
+        UI.open(`
+          <h4>NUEVA LISTA</h4>
+          <div class="form-group"><label>NOMBRE</label><input type="text" id="list-name" class="form-input"></div>
+          <div class="form-actions"><button class="btn" onclick="UI.close()">CANCELAR</button><button class="btn primary" onclick="const n=$('#list-name').value.trim(); if(!n) return UI.toast('NOMBRE OBLIGATORIO','warn'); Store.data.lists.push({id:'l'+Date.now(),name:n,games:[]}); Store.save(); UI.close(); UI.toast('LISTA CREADA'); App.render()">CREAR</button></div>
+        `); $("#list-name")?.focus();
+      },
+
+      editList(id) {
+        const l = Store.data.lists.find(x => x.id === id); if (!l) return;
+        UI.open(`
+          <h4>EDITAR: ${l.name}</h4>
+          <div style="max-height:300px; overflow-y:auto; margin-bottom:1rem">${Store.data.games.map(g => `<div class="form-group" style="display:flex; gap:0.4rem; align-items:center; margin:0"><input type="checkbox" ${l.games.includes(g.id)?'checked':''} onchange="App.toggleGameList('${g.id}','${id}',this.checked)"> <span style="font-size:0.8rem">${g.title}</span></div>`).join("")}</div>
+          <div class="form-actions"><button class="btn warn" onclick="Store.data.lists=Store.data.lists.filter(x=>x.id!=='${id}'); Store.save(); UI.close(); UI.toast('LISTA ELIMINADA','warn'); App.render()">ELIMINAR</button><button class="btn primary" onclick="UI.close(); UI.toast('GUARDADO'); App.render()">GUARDAR</button></div>
+        `);
+      },
+
+      postStatus(val) {
+        if (!val.trim()) return;
+        Store.data.posts.unshift({ id: "p" + Date.now(), userId: "u1", content: val, time: new Date().toLocaleTimeString("es-ES", {hour:"2-digit",minute:"2-digit"}), likes: 0, likedBy: [] });
+        Store.save(); UI.toast("PUBLICADO"); App.render();
+      },
+
+      toggleLike(pid) {
+        const p = Store.data.posts.find(x => x.id === pid); if (!p) return;
+        if (!p.likedBy) p.likedBy = [];
+        const has = p.likedBy.includes("u1");
+        has ? p.likedBy = p.likedBy.filter(x => x !== "u1") : p.likedBy.push("u1");
+        p.likes = p.likedBy.length;
+        Store.save(); App.render();
+      },
+
+      updateProfileTags(val) { Store.set("user.tags", val.split(",").map(t => t.trim().toLowerCase()).filter(Boolean)); UI.toast("ETIQUETAS ACTUALIZADAS"); App.render(); },
+      updateProfileBio(val) { Store.set("user.bio", val); },
+      updateProfileStatus(val) { Store.set("user.status", val); }
     };
 
     // VISTAS
@@ -218,211 +336,104 @@
       library() {
         const q = App.state.q.toLowerCase();
         let data = [...Store.data.games];
-        if(q) data = data.filter(g => g.title.toLowerCase().includes(q) || g.tags.some(t=>t.toLowerCase().includes(q)));
-        const filters = ['all','played','fav','pending','dropped'];
-        const active = App.state.filter || 'all';
-        if(active !== 'all') data = data.filter(g => g.status === (active==='dropped'?'pending':active));
-        const total = data.length; const slice = data.slice(0, App.state.perPage);
+        if (q) data = data.filter(g => g.title.toLowerCase().includes(q) || g.tags.some(t => t.toLowerCase().includes(q)));
+        const filters = ["all", "played", "fav", "pending", "dropped"];
+        const active = App.state.filter || "all";
+        if (active !== "all") data = data.filter(g => g.status === active);
+        const slice = data; // Sin paginación compleja para mantener fluidez
         return `
           <div class="controls">
-            <div class="search-box"><input type="text" id="search" placeholder="BUSCAR TITULO O ETIQUETA..." value="${App.state.q}"></div>
-            ${filters.map(f=>`<button class="btn ${active===f?'primary':''}" onclick="App.state.filter='${f}';App.render()">${f.toUpperCase()}</button>`).join('')}
-            <button class="btn" onclick="App.resetFilter()">LIMPIAR</button>
+            <div class="search-box"><input type="text" id="search" placeholder="BUSCAR TÍTULO O ETIQUETA..." value="${App.state.q}"></div>
+            ${filters.map(f => `<button class="btn ${active === f ? 'primary' : ''}" onclick="App.state.filter='${f}'; App.render()">${f === 'all' ? 'TODOS' : f.toUpperCase()}</button>`).join("")}
+            <button class="btn ghost" onclick="App.resetFilter()">LIMPIAR</button>
           </div>
-          <div class="grid">${slice.length ? slice.map(g=>`
+          <div class="grid">${slice.length ? slice.map(g => `
             <div class="card" onclick="App.openGame('${g.id}')">
               <div class="card-header"><div class="card-title">${g.title}</div><div class="rating">★ ${g.rating}</div></div>
-              <div class="tags">${g.tags.map(t=>`<span class="tag ${t==='PENDING'?'pending':t==='FAV'?'fav':''}">${t}</span>`).join('')}</div>
+              <div class="tags">${g.tags.map(t => `<span class="tag ${t==='PENDING'?'pending':t==='FAV'?'fav':t==='DROPPED'?'dropped':''}">${t}</span>`).join("")}</div>
               <div class="progress-wrap">
                 <div class="progress-label"><span>${g.status.toUpperCase()}</span><span>${g.progress}%</span></div>
                 <div class="progress-bar"><div class="progress-fill" style="width:${g.progress}%"></div></div>
               </div>
-            </div>`).join('') : '<div class="empty-state">SIN RESULTADOS</div>'}</div>
-          <div class="controls" style="justify-content:center; margin-top:1rem; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-3)">
-            REGISTROS: ${total} | PAGINA: ${App.state.page}/${Math.ceil(total/App.state.perPage)||1}
-          </div>`;
+            </div>`).join("") : '<div class="empty-state">SIN RESULTADOS</div>'}</div>`;
       },
+
       lists() {
-        const lists = Store.get('lists');
+        const lists = Store.data.lists;
         return `
-          <div class="controls"><button class="btn primary" onclick="App.createListModal()">+ NUEVA LISTA</button></div>
-          <div class="grid">${lists.map(l=>`
-            <div class="card">
+          <div class="controls"><button class="btn primary" onclick="App.createList()">+ NUEVA LISTA</button></div>
+          <div class="grid">${lists.map(l => `
+            <div class="card" onclick="App.editList('${l.id}')">
               <div class="card-header"><div class="card-title">${l.name}</div></div>
-              <div style="font-size:0.75rem; color:var(--text-3); margin:0.3rem 0; font-family:var(--font-mono)">${l.games.length} JUEGOS</div>
-              <div class="tags">${l.games.slice(0,3).map(id=>{
-                const g = Store.data.games.find(x=>x.id===id); return g ? `<span class="tag">${g.title}</span>` : '';
-              }).join('')}</div>
-              <div class="card-actions"><button class="btn sm" onclick="App.editList('${l.id}')">EDITAR</button></div>
-            </div>`).join('')}</div>`;
+              <div style="font-size:0.7rem; color:var(--text-3); margin:0.3rem 0; font-family:var(--font-mono)">${l.games.length} TÍTULOS</div>
+              <div class="tags">${l.games.slice(0, 3).map(id => { const g = Store.data.games.find(x => x.id === id); return g ? `<span class="tag">${g.title}</span>` : ""; }).join("")}</div>
+            </div>`).join("")}</div>`;
       },
+
       social() {
-        const posts = Store.get('posts');
-        const myLib = Store.data.games.filter(g=>g.status!=='pending').map(g=>g.id);
-        const recs = Store.data.users.filter(u => u.id !== 'u1' && u.library?.some(id=>myLib.includes(id))).slice(0,3).map(u => {
-          const aff = Store.calcAffinity(u.id); return `<span class="affinity-badge" onclick="App.viewProfile('${u.id}')">${u.name} (${aff}%)</span>`;
-        }).join('');
+        const posts = Store.data.posts;
+        const myLib = Store.data.games.filter(g => g.status !== "pending").map(g => g.id);
+        const recs = Store.data.users.filter(u => u.id !== "u1" && (u.library || []).some(id => myLib.includes(id))).slice(0, 4);
         return `
           <div class="detail-grid">
-            <div class="feed-section">
+            <div>
               <h4 style="margin-bottom:0.8rem; color:var(--text-2); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.5px">ACTIVIDAD RECIENTE</h4>
-              ${posts.map(p=>{
-                const u = Store.data.users.find(x=>x.id===p.userId) || Store.data.user;
+              ${posts.map(p => {
+                const u = Store.data.users.find(x => x.id === p.userId) || Store.data.user;
+                const liked = p.likedBy?.includes("u1");
                 return `<div class="feed-item">
                   <div class="feed-header"><span class="feed-user">${u.name}</span><span class="feed-meta">${p.time}</span></div>
                   <div class="feed-content">${p.content}</div>
-                  <div class="feed-actions"><button class="feed-btn" onclick="this.textContent=this.textContent.includes('+1')?this.textContent.replace('+1',''):'LIKED +1'">LIKE</button><button class="feed-btn">COMENTAR</button></div>
+                  <div class="feed-actions"><button class="feed-btn ${liked?'liked':''}" onclick="App.toggleLike('${p.id}')">${liked?'LIKED':'LIKE'} (${p.likes})</button><button class="feed-btn">RESPONDER</button></div>
                 </div>`;
-              }).join('')}
+              }).join("")}
             </div>
-            <div class="detail-panel">
-              <h4>RECOMENDACIONES POR AFINIDAD</h4>
-              <div style="display:flex; flex-wrap:wrap; gap:0.5rem">${recs || '<div style="color:var(--text-3); font-size:0.75rem">CALIBRANDO RED NEURONAL...</div>'}</div>
-              <div style="margin-top:1rem; border-top:1px solid var(--border); padding-top:0.8rem">
-                <div class="status-box"><textarea placeholder="PUBLICAR ESTADO..." rows="3" onblur="App.postStatus(this.value)"></textarea></div>
-              </div>
+            <div class="panel">
+              <h4>AFINIDAD DE RED</h4>
+              <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem">${recs.length ? recs.map(u => `<span class="affinity-badge" onclick="UI.toast('PERFIL: ${u.name}')">${u.name} ${Store.calcAffinity(u.id)}%</span>`).join("") : '<div style="font-size:0.7rem; color:var(--text-3)">CALIBRANDO...</div>'}</div>
+              <h4>ESTADO</h4>
+              <div class="status-box"><textarea placeholder="PUBLICAR ACTUALIZACIÓN..." onblur="App.postStatus(this.value)"></textarea></div>
             </div>
           </div>`;
       },
+
       profile() {
-        const u = Store.get('user');
-        const totalGames = Store.data.games.length;
-        const completed = Store.data.games.filter(g=>g.status==='played').length;
+        const u = Store.data.user;
+        const total = Store.data.games.length;
+        const completed = Store.data.games.filter(g => g.status === "played").length;
         return `
           <div class="profile-grid">
             <div class="profile-card">
               <div class="avatar-circle">Z</div>
               <div style="text-align:center; margin-bottom:1rem"><h3 style="margin:0">${u.name}</h3><p style="color:var(--text-3); font-size:0.8rem; margin-top:0.3rem">${u.status}</p></div>
-              <div class="detail-panel" style="margin-bottom:0.8rem">
-                <h4>ETIQUETAS DE PERFIL</h4>
-                <div style="display:flex; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.5rem">${u.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-                <button class="btn sm" onclick="App.editProfileTags()">MODIFICAR</button>
+              <div class="panel" style="margin-bottom:0.8rem">
+                <h4>ETIQUETAS</h4>
+                <div style="display:flex; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.5rem">${u.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+                <button class="btn sm" onclick="const t=prompt('ETIQUETAS (SEPARADAS POR COMA):', '${u.tags.join(", ")}'); if(t!==null) App.updateProfileTags(t)">MODIFICAR</button>
               </div>
-              <div class="detail-panel">
+              <div class="panel">
                 <h4>BIOGRAFÍA</h4>
-                <p style="font-size:0.85rem; line-height:1.5">${u.bio}</p>
+                <textarea class="form-textarea" style="min-height:60px" onblur="App.updateProfileBio(this.value)">${u.bio}</textarea>
               </div>
             </div>
             <div class="profile-card">
-              <h4 style="margin-bottom:0.8rem; color:var(--text-2); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.5px">ESTADÍSTICAS DE OPERADOR</h4>
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:1rem">
-                <div style="background:var(--surface-2); padding:0.8rem; border-radius:8px; text-align:center"><div style="font-size:1.5rem; font-weight:700; color:var(--accent)">${totalGames}</div><div style="font-size:0.7rem; color:var(--text-3)">TOTALES</div></div>
-                <div style="background:var(--surface-2); padding:0.8rem; border-radius:8px; text-align:center"><div style="font-size:1.5rem; font-weight:700; color:var(--ok)">${completed}</div><div style="font-size:0.7rem; color:var(--text-3)">COMPLETADOS</div></div>
+              <h4 style="margin-bottom:0.8rem; color:var(--text-2); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.5px">MÉTRICAS</h4>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:1rem">
+                <div style="background:var(--surface-2); padding:0.8rem; border-radius:8px; text-align:center"><div style="font-size:1.4rem; font-weight:700; color:var(--cyan)">${total}</div><div style="font-size:0.65rem; color:var(--text-3)">REGISTROS</div></div>
+                <div style="background:var(--surface-2); padding:0.8rem; border-radius:8px; text-align:center"><div style="font-size:1.4rem; font-weight:700; color:var(--lime)">${completed}</div><div style="font-size:0.65rem; color:var(--text-3)">COMPLETADOS</div></div>
               </div>
-              <div class="detail-panel">
-                <h4>ACTUALIZAR ESTADO</h4>
-                <div class="status-box"><textarea placeholder="NUEVO ESTADO..." rows="2" onblur="App.updateStatus(this.value)">${u.status}</textarea></div>
-                <button class="btn sm" onclick="App.updateStatus(this.previousElementSibling.querySelector('textarea').value); UI.toast('ESTADO ACTUALIZADO')">GUARDAR ESTADO</button>
+              <div class="panel">
+                <h4>ESTADO ACTUAL</h4>
+                <div class="status-box"><textarea onblur="App.updateProfileStatus(this.value)">${u.status}</textarea></div>
               </div>
             </div>
           </div>`;
       }
     };
 
-    // APLICACION PRINCIPAL
-    const App = {
-      state: { q: '', page: 1, perPage: 12, filter: 'all' },
-      currentView: 'library',
-
-      async render() {
-        UI.$('#app').innerHTML = '<div class="grid">' + Array(4).fill('<div class="skeleton"></div>').join('') + '</div>';
-        await new Promise(r => setTimeout(r, 250));
-        const map = { library: Views.library, lists: Views.lists, social: Views.social, profile: Views.profile };
-        UI.$('#app').innerHTML = `<div class="view">${map[this.currentView]()}</div>`;
-        this.bind();
-      },
-      bind() {
-        const s = UI.$('#search'); if(s) {
-          s.addEventListener('input', e => { this.state.q = e.target.value; this.render(); });
-          s.focus();
-        }
-      },
-      resetFilter() { this.state.filter = 'all'; this.state.q = ''; this.render(); },
-      openGame(id) {
-        const g = Store.data.games.find(x=>x.id===id); if(!g) return;
-        const similar = (g.similar||[]).map(sid => Store.data.games.find(x=>x.id===sid)).filter(Boolean);
-        UI.openModal(`
-          <div class="detail-grid">
-            <div class="detail-panel">
-              <h4>${g.title}</h4>
-              <div style="display:flex; justify-content:space-between; margin-bottom:1rem"><div class="rating">★ ${g.rating}</div><span class="tag ${g.status==='pending'?'pending':g.status==='fav'?'fav':''}">${g.status.toUpperCase()}</span></div>
-              <div style="margin-bottom:1rem; font-size:0.85rem; line-height:1.6; color:var(--text-2)">${g.review}</div>
-              <div class="form-group"><label>TU VALORACIÓN</label><input type="range" min="1" max="10" step="0.1" value="${g.rating}" onchange="App.rateGame('${id}', this.value)"><div style="text-align:right; font-family:var(--font-mono); margin-top:0.2rem" id="rate-val">${g.rating}</div></div>
-              <div class="form-group"><label>RESEÑA</label><textarea class="form-textarea" onblur="App.updateReview('${id}', this.value)">${g.review}</textarea></div>
-            </div>
-            <div class="detail-panel">
-              <h4>PERSONAJES FAVORITOS</h4>
-              <div class="char-grid">${g.characters.map(c=>`<div class="char-chip" onclick="this.classList.toggle('active')">${c}</div>`).join('')}</div>
-              <h4 style="margin-top:1.5rem">TÍTULOS SIMILARES</h4>
-              <div style="display:flex; flex-wrap:wrap; gap:0.5rem">${similar.length ? similar.map(s=>`<button class="btn sm" onclick="UI.closeModal(); setTimeout(()=>App.openGame('${s.id}'),100)">${s.title}</button>`).join('') : '<div style="font-size:0.75rem; color:var(--text-3)">SIN DATOS DE COMPATIBILIDAD</div>'}</div>
-            </div>
-          </div>
-          <div class="form-actions"><button class="btn warn" onclick="UI.closeModal()">CERRAR</button><button class="btn primary" onclick="App.moveGame('${id}')">MOVER A LISTA</button></div>
-        `);
-        UI.$('#rate-val').textContent = UI.$('#modal-content input[type="range"]').value;
-        UI.$('#modal-content input[type="range"]').oninput = function() { UI.$('#rate-val').textContent = this.value; };
-      },
-      rateGame(id, val) { Store.update(`games.find(x=>x.id==='${id}').rating`, parseFloat(val)); Store.sync(); },
-      updateReview(id, txt) { Store.update(`games.find(x=>x.id==='${id}').review`, txt); UI.toast('RESEÑA GUARDADA'); },
-      moveGame(id) {
-        const lists = Store.get('lists');
-        UI.openModal(`
-          <h4>ASIGNAR A LISTA</h4>
-          ${lists.map(l=>`<div class="form-group"><label style="display:flex; gap:0.5rem; align-items:center"><input type="checkbox" ${l.games.includes(id)?'checked':''} onchange="App.toggleGameList('${id}','${l.id}',this.checked)"> ${l.name}</label></div>`).join('')}
-          <div class="form-actions"><button class="btn primary" onclick="UI.closeModal(); App.render(); UI.toast('LISTA ACTUALIZADA')">CONFIRMAR</button></div>
-        `);
-      },
-      toggleGameList(gid, lid, add) {
-        const list = Store.data.lists.find(x=>x.id===lid);
-        if(add && !list.games.includes(gid)) list.games.push(gid);
-        else if(!add) list.games = list.games.filter(x=>x!==gid);
-        Store.sync();
-      },
-      createListModal() {
-        UI.openModal(`
-          <h4>NUEVA LISTA</h4>
-          <div class="form-group"><label>NOMBRE</label><input type="text" id="new-list-name" class="form-input"></div>
-          <div class="form-actions"><button class="btn" onclick="UI.closeModal()">CANCELAR</button><button class="btn primary" onclick="App.saveList()">CREAR</button></div>
-        `); UI.$('#new-list-name').focus();
-      },
-      saveList() {
-        const name = UI.$('#new-list-name').value.trim(); if(!name) return UI.toast('NOMBRE REQUERIDO','warn');
-        Store.data.lists.push({ id: 'l'+Date.now(), name, games: [] });
-        Store.sync(); UI.closeModal(); UI.toast('LISTA CREADA'); App.render();
-      },
-      editList(id) {
-        const l = Store.data.lists.find(x=>x.id===id);
-        UI.openModal(`
-          <h4>EDITAR LISTA: ${l.name}</h4>
-          <div style="max-height:300px; overflow-y:auto; margin-bottom:1rem">
-            ${Store.data.games.map(g=>`<div class="form-group" style="display:flex; gap:0.5rem; align-items:center"><input type="checkbox" ${l.games.includes(g.id)?'checked':''} onchange="App.toggleGameList('${g.id}','${id}',this.checked)"> <span style="font-size:0.8rem">${g.title}</span></div>`).join('')}
-          </div>
-          <div class="form-actions"><button class="btn primary" onclick="UI.closeModal(); UI.toast('LISTA ACTUALIZADA'); App.render()">GUARDAR</button></div>
-        `);
-      },
-      viewProfile(uid) { UI.toast(`PERFIL DE ${uid} EN CONSTRUCCION`); },
-      editProfileTags() {
-        const u = Store.get('user');
-        UI.openModal(`
-          <h4>ETIQUETAS DE PERFIL</h4>
-          <div class="form-group"><label>SEPARAR POR COMA</label><input type="text" id="new-tags" class="form-input" value="${u.tags.join(', ')}"></div>
-          <div class="form-actions"><button class="btn primary" onclick="Store.update('user.tags', UI.$('#new-tags').value.split(',').map(x=>x.trim().toLowerCase()).filter(Boolean)); Store.sync(); UI.closeModal(); UI.toast('ETIQUETAS ACTUALIZADAS'); App.render()">APLICAR</button></div>
-        `);
-      },
-      updateStatus(val) { Store.update('user.status', val); Store.sync(); },
-      postStatus(val) {
-        if(!val.trim()) return;
-        Store.data.posts.unshift({ id: 'p'+Date.now(), userId: 'u1', content: val, time: new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}), likes: 0 });
-        Store.sync(); UI.toast('PUBLICACION ENVIADA'); App.render();
-      }
-    };
-
     // INICIALIZACIÓN
     Store.init();
-    document.addEventListener('DOMContentLoaded', () => {
-      App.render();
-      UI.$$('#main-nav button').forEach(b => b.addEventListener('click', () => UI.route(b.dataset.view)));
-    });
+    document.addEventListener("DOMContentLoaded", () => App.render());
   </script>
 </body>
 </html>
