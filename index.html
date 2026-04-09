@@ -6,180 +6,294 @@
   <title>GameTracker // ZYANETRALYS</title>
   <style>
     :root {
-      --bg: #0b0e14; --panel: #11131a; --input: #1a1d24; --text: #c5c6c7;
-      --muted: #8892b0; --accent: #0052a3; --accent-hover: #0066cc;
-      --border: #2a2d35; --success: #22c55e; --warning: #f59e0b; --error: #ef4444;
+      --bg: #0b0f19; --surface: #111827; --surface-hover: #1f2937;
+      --border: #374151; --text: #e5e7eb; --muted: #9ca3af;
+      --accent: #3b82f6; --accent-hover: #2563eb; --success: #10b981;
+      --warning: #f59e0b; --error: #ef4444; --radius: 10px;
+      --shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
-      background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 2rem 1rem;
-    }
-    .container { max-width: 880px; margin: 0 auto; }
-    header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem;
-    }
-    header h1 { font-size: 1.1rem; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; }
-    .status { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--panel); border: 1px solid var(--success); color: var(--success); }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; }
+    
+    /* Header */
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 1px solid var(--border); background: rgba(17,24,39,0.8); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+    .brand { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.5rem; }
+    .brand span { color: var(--accent); }
+    .status-badge { background: rgba(16,185,129,0.15); color: var(--success); padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; }
+    .status-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-    .controls { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
-    input[type="text"] {
-      flex: 1; padding: 0.7rem; background: var(--input); border: 1px solid var(--border);
-      color: var(--text); border-radius: 6px; font-family: inherit; font-size: 0.85rem; outline: none;
-    }
-    input[type="text"]:focus { border-color: var(--accent); }
-    button {
-      padding: 0.7rem 1rem; background: var(--accent); color: #fff; border: none;
-      border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.85rem; transition: background 0.15s;
-    }
-    button:hover { background: var(--accent-hover); }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    /* Nav */
+    nav { display: flex; gap: 0.5rem; padding: 0.75rem 2rem; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; }
+    nav button { background: transparent; border: none; color: var(--muted); padding: 0.6rem 1rem; font-size: 0.85rem; font-weight: 500; cursor: pointer; border-radius: var(--radius); transition: all 0.2s; white-space: nowrap; }
+    nav button:hover { color: var(--text); background: var(--surface-hover); }
+    nav button.active { color: var(--text); background: var(--accent); }
 
-    .loader { text-align: center; padding: 1.5rem; color: var(--muted); display: none; font-size: 0.85rem; }
-    .loader.active { display: block; }
-    .empty { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.9rem; }
+    /* Main */
+    main { padding: 1.5rem 2rem; max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 140px); }
+    .controls { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 250px; padding: 0.7rem 1rem; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); font-size: 0.9rem; outline: none; transition: border 0.2s; }
+    .search-input:focus { border-color: var(--accent); }
+    .btn { padding: 0.7rem 1.2rem; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: var(--accent-hover); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .game-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
-    .game-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.9rem 1rem; background: var(--panel); border: 1px solid var(--border);
-      border-radius: 6px; transition: transform 0.12s, box-shadow 0.12s;
-    }
-    .game-item:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-    .game-meta { display: flex; flex-direction: column; gap: 0.3rem; }
-    .game-title { font-weight: 600; font-size: 0.95rem; }
-    .game-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .tag { font-size: 0.65rem; padding: 0.1rem 0.35rem; background: rgba(136,146,176,0.15); border-radius: 3px; color: var(--muted); }
-    .game-rating { font-size: 1rem; color: var(--warning); font-weight: bold; }
+    /* Grid & Cards */
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .game-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; }
+    .game-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; }
+    .game-title { font-weight: 600; font-size: 1rem; }
+    .rating { font-weight: 700; color: var(--warning); display: flex; align-items: center; gap: 0.3rem; }
+    .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.6rem 0; }
+    .tag { font-size: 0.7rem; padding: 0.2rem 0.5rem; background: rgba(59,130,246,0.1); color: #60a5fa; border-radius: 4px; border: 1px solid rgba(59,130,246,0.3); }
+    .tag.pending { background: rgba(245,158,11,0.1); color: #fbbf24; border-color: rgba(245,158,11,0.3); }
+    .tag.favorite { background: rgba(239,68,68,0.1); color: #f87171; border-color: rgba(239,68,68,0.3); }
+    .status-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 0.8rem; overflow: hidden; }
+    .status-fill { height: 100%; background: var(--success); width: 100%; }
+    .status-fill.mid { width: 60%; background: var(--warning); }
+    .status-fill.low { width: 25%; background: var(--error); }
 
-    .pagination { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem; }
-    .page-btn { padding: 0.5rem 0.9rem; background: var(--panel); border: 1px solid var(--border); color: var(--text); }
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 0.8rem; margin-top: 2rem; }
+    .page-btn { padding: 0.5rem 0.9rem; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); cursor: pointer; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .page-info { font-size: 0.8rem; color: var(--muted); }
 
-    .toast {
-      position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.6rem 0.9rem;
-      background: var(--panel); border-left: 4px solid var(--accent);
-      color: var(--text); border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-      transform: translateX(120%); transition: transform 0.25s ease; z-index: 100; font-size: 0.8rem;
-    }
-    .toast.show { transform: translateX(0); }
-    .toast.error { border-color: var(--error); }
-    .toast.success { border-color: var(--success); }
+    /* Matchmaking */
+    .match-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; max-width: 500px; margin: 0 auto; }
+    .elo-display { font-size: 2.5rem; font-weight: 700; color: var(--accent); margin: 1rem 0; }
+    .queue-status { font-size: 0.9rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.5rem; display: none; }
+    .spinner.active { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .match-found { background: rgba(16,185,129,0.1); border: 1px solid var(--success); color: var(--success); padding: 1rem; border-radius: var(--radius); margin-top: 1rem; display: none; }
+    .match-found.show { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    @media (max-width: 600px) {
-      .game-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-      .game-rating { align-self: flex-start; }
+    /* Clans */
+    .clan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .clan-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+    .clan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+    .clan-name { font-weight: 600; font-size: 1.1rem; }
+    .clan-role { font-size: 0.7rem; padding: 0.2rem 0.5rem; background: rgba(245,158,11,0.2); color: #fbbf24; border-radius: 4px; }
+    .clan-meta { display: flex; gap: 1rem; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.8rem; }
+    .invite-input { width: 100%; padding: 0.6rem; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); font-size: 0.85rem; margin-top: 0.5rem; }
+
+    /* Toast */
+    #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+    .toast { background: var(--surface); border-left: 4px solid var(--accent); color: var(--text); padding: 0.8rem 1rem; border-radius: var(--radius); box-shadow: var(--shadow); transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: all; font-size: 0.85rem; }
+    .toast.show { transform: translateX(0); }
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--error); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header, nav, main { padding-left: 1rem; padding-right: 1rem; }
+      .game-grid, .clan-grid { grid-template-columns: 1fr; }
+      .controls { flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>GameTracker // ZYANETRALYS</h1>
-      <span class="status">● SISTEMA ACTIVO</span>
-    </header>
+  <header>
+    <div class="brand">GameTracker <span>// ZYANETRALYS</span></div>
+    <div class="status-badge"><div class="status-dot"></div> SISTEMA ONLINE</div>
+  </header>
 
-    <div class="controls">
-      <input type="text" id="search" placeholder="Buscar por título, rol o estado..." autocomplete="off">
-      <button id="searchBtn">Filtrar</button>
-    </div>
+  <nav id="nav">
+    <button data-tab="biblioteca" class="active">📚 Biblioteca</button>
+    <button data-tab="pendientes">⏳ Pendientes</button>
+    <button data-tab="favoritos">⭐ Favoritos</button>
+    <button data-tab="matchmaking">🎯 Matchmaking Coop</button>
+    <button data-tab="clanes">🛡️ Clanes</button>
+  </nav>
 
-    <div class="loader" id="loader">Sincronizando datos...</div>
-    <ul class="game-list" id="gameList"></ul>
-
-    <div class="pagination">
-      <button class="page-btn" id="prevBtn">◀</button>
-      <span class="page-info" id="pageInfo">Página 1</span>
-      <button class="page-btn" id="nextBtn">▶</button>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
+  <main id="app"></main>
+  <div id="toast-container"></div>
 
   <script>
-    const MOCK = [
-      { id:'hd2', title:'Helldivers 2', rating:8.5, tags:['Coop','Tactical','Shooter'], status:'JUGADO' },
-      { id:'val', title:'Valorant', rating:7.2, tags:['Competitivo','FPS','5v5'], status:'PENDIENTE' },
-      { id:'er', title:'Elden Ring', rating:9.8, tags:['Souls','Mundo Abierto','RPG'], status:'FAVORITO' },
-      { id:'cy', title:'Cyberpunk 2077', rating:8.1, tags:['RPG','Sci-Fi','Acción'], status:'JUGADO' },
-      { id:'bg3', title:'Baldur\'s Gate 3', rating:9.5, tags:['CRPG','Narrativo','Coop'], status:'JUGADO' },
-      { id:'h2', title:'Hades II', rating:8.9, tags:['Roguelike','Acción','Indie'], status:'PENDIENTE' },
-      { id:'sf', title:'Starfield', rating:6.5, tags:['RPG','Exploración','Sci-Fi'], status:'PENDIENTE' },
-      { id:'dos2', title:'Divinity: Original Sin 2', rating:9.2, tags:['CRPG','Turnos','Fantasía'], status:'FAVORITO' },
-      { id:'ds', title:'Dark Souls Remastered', rating:8.8, tags:['Souls','Clásico','Difícil'], status:'JUGADO' },
-      { id:'rdr', title:'Red Dead Redemption 2', rating:9.4, tags:['Acción','Narrativo','Mundo Abierto'], status:'JUGADO' },
-      { id:'totk', title:'Zelda: Tears of the Kingdom', rating:9.6, tags:['Aventura','Puzzles','Nintendo'], status:'FAVORITO' },
-      { id:'doom', title:'DOOM Eternal', rating:8.7, tags:['FPS','Rápido','Metal'], status:'PENDIENTE' }
-    ];
-
-    let state = { q: '', page: 1, perPage: 5, loading: false, data: [...MOCK] };
-    const el = id => document.getElementById(id);
-
-    const toast = (msg, type='success') => {
-      const t = el('toast'); t.textContent = msg; t.className = `toast show ${type}`;
-      setTimeout(() => t.classList.remove('show'), 2500);
+    // --- Estado Global ---
+    const state = {
+      tab: 'biblioteca',
+      query: '',
+      page: 1,
+      perPage: 6,
+      games: [
+        { id: 'hd2', title: 'Helldivers 2', rating: 8.5, tags: ['Coop', 'Táctico', 'Shooter'], status: 'jugado', progress: 100 },
+        { id: 'er', title: 'Elden Ring', rating: 9.8, tags: ['Souls', 'Mundo Abierto', 'RPG'], status: 'favorito', progress: 100 },
+        { id: 'bg3', title: "Baldur's Gate 3", rating: 9.4, tags: ['CRPG', 'Narrativo', 'Coop'], status: 'jugado', progress: 85 },
+        { id: 'val', title: 'Valorant', rating: 7.8, tags: ['Competitivo', 'FPS', '5v5'], status: 'pendiente', progress: 0 },
+        { id: 'cy', title: 'Cyberpunk 2077', rating: 8.2, tags: ['RPG', 'Sci-Fi', 'Acción'], status: 'pendiente', progress: 30 },
+        { id: 'ds2', title: 'Dark Souls II', rating: 8.6, tags: ['Souls', 'Clásico', 'Difícil'], status: 'jugado', progress: 100 },
+        { id: 'totk', title: 'Zelda: Tears of the Kingdom', rating: 9.6, tags: ['Aventura', 'Puzzles', 'Nintendo'], status: 'favorito', progress: 100 },
+        { id: 'h2', title: 'Hades II', rating: 8.9, tags: ['Roguelike', 'Acción', 'Indie'], status: 'pendiente', progress: 10 },
+        { id: 'rdr', title: 'Red Dead Redemption 2', rating: 9.5, tags: ['Narrativo', 'Mundo Abierto', 'Acción'], status: 'jugado', progress: 100 },
+        { id: 'sf', title: 'Starfield', rating: 6.8, tags: ['RPG', 'Exploración', 'Sci-Fi'], status: 'pendiente', progress: 0 },
+        { id: 'doom', title: 'DOOM Eternal', rating: 8.7, tags: ['FPS', 'Rápido', 'Metal'], status: 'favorito', progress: 100 },
+        { id: 'sekiro', title: 'Sekiro', rating: 9.3, tags: ['Souls', 'Parry', 'Difícil'], status: 'jugado', progress: 100 }
+      ],
+      clans: [
+        { id: 'c1', name: 'Vanguardia Táctica', members: 42, role: 'Oficial' },
+        { id: 'c2', name: 'Lobo de Madrid', members: 18, role: 'Miembro' },
+        { id: 'c3', name: 'Zero Latency', members: 156, role: 'Creador' }
+      ],
+      matchmaking: { active: false, elo: 1420, queueTime: 0, found: false, opponent: null }
     };
 
-    const render = () => {
-      el('loader').classList.toggle('active', state.loading);
-      const list = el('gameList'); list.innerHTML = '';
-      if (state.loading) return;
+    // --- Utilidades ---
+    const $ = id => document.getElementById(id);
+    const showToast = (msg, type = 'success') => {
+      const container = $('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 2500);
+    };
 
+    const formatTags = tags => tags.map(t => `<span class="tag ${t === 'pendiente' ? 'pending' : t === 'favorito' ? 'favorite' : ''}">${t}</span>`).join('');
+    const statusFill = prog => prog >= 100 ? '' : prog >= 50 ? 'mid' : 'low';
+    const statusLabel = prog => prog >= 100 ? 'Completado' : prog >= 50 ? 'En progreso' : 'Sin iniciar';
+
+    // --- Renderizadores ---
+    const renderBiblioteca = () => {
+      const filtered = state.games.filter(g => 
+        g.title.toLowerCase().includes(state.query.toLowerCase()) || 
+        g.tags.some(t => t.toLowerCase().includes(state.query.toLowerCase()))
+      );
       const start = (state.page - 1) * state.perPage;
-      const slice = state.data.slice(start, start + state.perPage);
+      const slice = filtered.slice(start, start + state.perPage);
+      const total = Math.ceil(filtered.length / state.perPage) || 1;
 
-      if (!slice.length) {
-        list.innerHTML = `<li class="empty">Sin resultados. Ajusta la búsqueda.</li>`;
-        return;
-      }
+      let html = `
+        <div class="controls">
+          <input type="text" class="search-input" placeholder="Buscar por título, rol o etiqueta..." value="${state.query}" id="search">
+          <button class="btn" onclick="resetSearch()">Limpiar</button>
+        </div>
+        <div class="game-grid">
+          ${slice.map(g => `
+            <div class="game-card">
+              <div class="card-header">
+                <div class="game-title">${g.title}</div>
+                <div class="rating">★ ${g.rating.toFixed(1)}</div>
+              </div>
+              <div class="tags">${formatTags(g.tags)}</div>
+              <div style="font-size:0.75rem; color:var(--muted); margin-top:0.5rem;">${statusLabel(g.progress)} • ${g.progress}%</div>
+              <div class="status-bar"><div class="status-fill ${statusFill(g.progress)}"></div></div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="pagination">
+          <button class="page-btn" onclick="changePage(-1)" ${state.page <= 1 ? 'disabled' : ''}>◀ Anterior</button>
+          <span class="page-info">Página ${state.page} de ${total}</span>
+          <button class="page-btn" onclick="changePage(1)" ${state.page >= total ? 'disabled' : ''}>Siguiente ▶</button>
+        </div>`;
+      $('app').innerHTML = html;
+      $('search').addEventListener('input', e => { state.query = e.target.value; state.page = 1; render(); });
+    };
 
-      slice.forEach(g => {
-        const li = document.createElement('li');
-        li.className = 'game-item';
-        li.innerHTML = `
-          <div class="game-meta">
-            <span class="game-title">${g.title}</span>
-            <div class="game-tags">${g.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    const renderPending = () => { state.games = state.games.map(g => ({...g})).filter(g => g.status === 'pendiente'); renderBiblioteca(); };
+    const renderFavorites = () => { state.games = state.games.map(g => ({...g})).filter(g => g.status === 'favorito'); renderBiblioteca(); };
+
+    const renderMatchmaking = () => {
+      const mm = state.matchmaking;
+      let queueHtml = `<div class="spinner ${mm.active ? 'active' : ''}"></div>
+                       <div class="queue-status">${mm.active ? 'Buscando oponente compatible por ELO y rol...' : 'Cola inactiva. Únete para encontrar compañeros.'}</div>
+                       ${mm.active ? `<div style="font-size:0.8rem; color:var(--muted);">Tiempo en cola: <span id="timer">${mm.queueTime}s</span></div>` : ''}
+                       <div class="match-found ${mm.found ? 'show' : ''}">
+                         <div style="font-weight:600;">✅ Partida Encontrada</div>
+                         <div style="margin-top:0.5rem; font-size:0.9rem;">Oponente: <span style="color:var(--text)">${mm.opponent || 'Agente_X9'}</span> • ELO: ${mm.elo + Math.floor(Math.random()*100-50)}</div>
+                         <button class="btn" style="margin-top:1rem;" onclick="acceptMatch()">Aceptar</button>
+                       </div>`;
+      
+      $('app').innerHTML = `
+        <div class="match-container">
+          <div style="font-size:0.9rem; color:var(--muted);">ELO ACTUAL</div>
+          <div class="elo-display">${mm.elo}</div>
+          ${queueHtml}
+          <div style="display:flex; gap:0.5rem; justify-content:center; margin-top:1.5rem;">
+            <button class="btn" onclick="toggleQueue()">${mm.active ? 'Cancelar Cola' : 'Unirse a la Cola'}</button>
           </div>
-          <div class="game-rating">★ ${g.rating.toFixed(1)}</div>`;
-        list.appendChild(li);
+        </div>`;
+      
+      if (mm.active && !mm.found) {
+        const interval = setInterval(() => {
+          if (!state.matchmaking.active || state.tab !== 'matchmaking') clearInterval(interval);
+          state.matchmaking.queueTime++;
+          const el = $('timer'); if(el) el.textContent = state.matchmaking.queueTime + 's';
+          if (state.matchmaking.queueTime >= 4 && !state.matchmaking.found) {
+            state.matchmaking.found = true;
+            clearInterval(interval);
+            render();
+          }
+        }, 1000);
+      }
+    };
+
+    const renderClans = () => {
+      $('app').innerHTML = `
+        <div class="controls">
+          <input type="text" class="search-input" placeholder="Buscar clan por nombre..." id="clanSearch">
+          <button class="btn" onclick="showToast('Función de crear clan disponible en backend')">+ Crear Clan</button>
+        </div>
+        <div class="clan-grid">
+          ${state.clans.map(c => `
+            <div class="clan-card">
+              <div class="clan-header">
+                <div class="clan-name">${c.name}</div>
+                <span class="clan-role">${c.role}</span>
+              </div>
+              <div class="clan-meta">
+                <span>👥 ${c.members} miembros</span>
+                <span>📅 Fundado 2024</span>
+              </div>
+              <input type="text" class="invite-input" placeholder="Código de invitación (opcional)">
+              <button class="btn" style="margin-top:0.8rem; width:100%;" onclick="showToast('Invitación enviada. Espera confirmación.')">Enviar Solicitud</button>
+            </div>
+          `).join('')}
+        </div>`;
+      $('clanSearch').addEventListener('input', e => {
+        const q = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.clan-card');
+        cards.forEach((card, i) => card.style.display = state.clans[i].name.toLowerCase().includes(q) ? 'block' : 'none');
       });
-
-      const total = Math.ceil(state.data.length / state.perPage) || 1;
-      el('pageInfo').textContent = `Página ${state.page} de ${total}`;
-      el('prevBtn').disabled = state.page <= 1;
-      el('nextBtn').disabled = state.page >= total;
     };
 
-    const fetch = (delay=true) => {
-      state.loading = true; render();
-      if (!delay) { state.loading=false; render(); return; }
-      setTimeout(() => {
-        state.loading = false;
-        const q = state.q.toLowerCase();
-        state.data = MOCK.filter(g =>
-          g.title.toLowerCase().includes(q) ||
-          g.tags.some(t => t.toLowerCase().includes(q)) ||
-          g.status.toLowerCase().includes(q)
-        );
-        state.page = 1; render(); toast('Sincronización completada');
-      }, 500);
+    // --- Controladores ---
+    const render = () => {
+      const renderMap = { biblioteca: renderBiblioteca, pendientes: renderPending, favoritos: renderFavorites, matchmaking: renderMatchmaking, clanes: renderClanes };
+      renderMap[state.tab]?.();
     };
 
-    el('search').addEventListener('input', e => {
-      state.q = e.target.value;
-      clearTimeout(window._debounce);
-      window._debounce = setTimeout(() => fetch(false), 300);
-    });
-    el('searchBtn').addEventListener('click', () => fetch(true));
-    el('prevBtn').addEventListener('click', () => { if(state.page>1){state.page--; render();} });
-    el('nextBtn').addEventListener('click', () => {
-      const max = Math.ceil(state.data.length/state.perPage)||1;
-      if(state.page<max){state.page++; render();}
-    });
+    const changeTab = tab => {
+      state.tab = tab;
+      state.page = 1;
+      state.query = '';
+      document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      render();
+    };
 
-    fetch(true);
+    const changePage = dir => { state.page += dir; render(); };
+    const resetSearch = () => { state.query = ''; state.page = 1; render(); };
+    const toggleQueue = () => {
+      state.matchmaking.active = !state.matchmaking.active;
+      if (!state.matchmaking.active) { state.matchmaking.found = false; state.matchmaking.queueTime = 0; }
+      showToast(state.matchmaking.active ? 'Unido a la cola de matchmaking' : 'Cola cancelada', state.matchmaking.active ? 'success' : 'error');
+      render();
+    };
+    const acceptMatch = () => {
+      state.matchmaking.active = false;
+      state.matchmaking.found = false;
+      state.matchmaking.queueTime = 0;
+      showToast('Partida aceptada. Conectando con servidor de juego...');
+      render();
+    };
+
+    // --- Init ---
+    document.querySelectorAll('nav button').forEach(btn => btn.addEventListener('click', () => changeTab(btn.dataset.tab)));
+    render();
   </script>
 </body>
 </html>
